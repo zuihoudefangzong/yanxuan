@@ -1,5 +1,5 @@
 module.exports = {
-  // main.js全局引入scss文件
+  // 全局引入scss文件base变量的scss
   css: {
     loaderOptions: {
       scss: {

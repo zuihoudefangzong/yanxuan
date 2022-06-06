@@ -8,8 +8,8 @@ import './assets/css/reset.css'
 import './assets/css/border.css'
 // rem适配方案
 import './assets/js/rem.js'
-// base变量的scss
-import './assets/scss/base.scss'
+// 引入字体图标
+import './assets/iconfont/iconfont.css'
 
 Vue.config.productionTip = false
 
