@@ -159,6 +159,11 @@ export default {
   destroyed () {
     this.pauseMove()
     window.removeEventListener('resize', this.calcWidth)
+  },
+  watch: {
+    list () {
+      this.calcWidth()
+    }
   }
 }
 </script>
