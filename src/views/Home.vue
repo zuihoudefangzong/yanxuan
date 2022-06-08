@@ -8,41 +8,49 @@
       </div>
       <div class="login">登录</div>
     </header>
-    <swiper :list="bannerList" class="swiper" @click="swiperClick"></swiper>
 
     <!-- home开始 -->
-    <!-- service信息 policy -->
-    <div class="service-policy" v-if="info && info.commonConfigModule">
-      <img :src="info.commonConfigModule.brandDescPicUrl" alt="">
-    </div>
+    <!-- 最外层固定height scroll加载 -->
+    <div class="scroll-container" ref="scroll-container">
+      <!-- 子元素溢出 -->
+      <div class="scroll-inner" ref="scroll-inner">
+        <!-- 轮播图 -->
+        <swiper :list="bannerList" class="swiper" @click="swiperClick"></swiper>
 
-    <!-- 分类 -->
-    <ul class="kingkong" v-if="info && info.kingKongAreaV4">
-      <li
-        class="kingkong-item"
-        v-for="item in info.kingKongAreaV4.slice(0,10)"
-        :key="item.title"
-      >
-        <img :src="item.picUrls[0]">
-        <div class="title">{{item.title}}</div>
-      </li>
-    </ul>
+        <!-- service信息 policy -->
+        <div class="service-policy" v-if="info && info.commonConfigModule">
+          <img :src="info.commonConfigModule.brandDescPicUrl" alt="">
+        </div>
 
-    <!-- banner -->
-    <!-- <div class="operation-cfg">
-      <img :src="info.operationCfg" alt="">
-    </div> -->
+        <!-- 分类 -->
+        <ul class="kingkong" v-if="info && info.kingKongAreaV4">
+          <li
+            class="kingkong-item"
+            v-for="item in info.kingKongAreaV4.slice(0,10)"
+            :key="item.title"
+          >
+            <img :src="item.picUrls[0]">
+            <div class="title">{{item.title}}</div>
+          </li>
+        </ul>
 
-    <!-- 推荐商品 -->
-    <div class="recommend" v-if="rcmdItemList.length > 0">
-      <h2 class="recommend-title">严选推荐</h2>
-      <div class="recommend-list">
-        <product
-          v-for="item in rcmdItemList.slice(5)"
-          :key="item.id"
-          :item="item.categoryItem"
-        >
-        </product>
+        <!-- banner -->
+        <!-- <div class="operation-cfg">
+          <img :src="info.operationCfg" alt="">
+        </div> -->
+
+        <!-- 推荐商品 -->
+        <div class="recommend" v-if="rcmdItemList.length > 0">
+          <h2 class="recommend-title">严选推荐</h2>
+          <div class="recommend-list">
+            <product
+              v-for="(item,index) in rcmdItemList.slice(5)"
+              :key="index"
+              :item="item.categoryItem"
+            >
+            </product>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -70,7 +78,10 @@ export default {
         // 'https://yanxuan.nosdn.127.net/e52ad10cfd0f24691c987006ef82a814.jpg?type=webp&imageView&quality=75&thumbnail=750x0'
       ],
       info: {}, // 首页信息
-      rcmdItemList: [] // 推荐商品列表
+      rcmdItemList: [], // 推荐商品列表
+      scrollContainerHeight: null, // dom高度
+      scrollInnerHeight: null,
+      recommendHasMore: true
     }
   },
   methods: {
@@ -84,24 +95,78 @@ export default {
     async getHomeInfo () {
       const res = await this.$axios.get(API_HOME)
       this.info = res
-      console.log(this.info)
       this.bannerList = res.focus.map(item => item.img)
     },
     async getRecommendInfo (lastItem = 0, size = 20) {
-      const { rcmdItemList } = await this.$axios.post(
+      const { rcmdItemList, hasMore } = await this.$axios.post(
         API_HOME_RCMD,
         {
           lastItem,
           size
         }
       )
-      this.rcmdItemList = rcmdItemList
+      this.recommendHasMore = hasMore
+      // 合并数组
+      this.rcmdItemList = this.rcmdItemList.concat(rcmdItemList)
+    },
+
+    // 触底加载
+    initScroll () {
+      const scrollTop = this.$refs['scroll-container'].scrollTop
+      // 元素内容高度的度量，包括由于溢出导致的视图中不可见内容
+      this.scrollInnerHeight = this.$refs['scroll-inner'].scrollHeight
+      console.log(scrollTop + this.scrollContainerHeight, this.scrollInnerHeight)
+      // 滚动了多少 +scrollContainerHeight 避免clientHeight四舍五入
+      if (scrollTop + this.scrollContainerHeight + 1 >= this.scrollInnerHeight) {
+        // console.log('触底了')
+        if (this.recommendHasMore) {
+          this.getRecommendInfo(this.rcmdItemList.length - 1)
+        }
+      }
+    },
+
+    // 防抖debouce应用 只执行最后一次
+    // 用户停止后 才执行
+    debounce (fn, delay) {
+      // 该timer变量永远存在debounce函数中
+      let timer = null
+      return () => {
+        // timer只有当前函数能访问到 闭包
+        if (timer) {
+          // 先取消上次的定时器
+          clearTimeout(timer)
+        }
+        timer = setTimeout(fn, delay)
+      }
+    },
+    // 节流 到达指定时间才执行复杂函数
+    // 第一次马上执行 然后有冷却时间
+    // 就是技能时间没到 不执行该复杂函数
+    throttle (fn, delay) {
+      let startTime = 0
+      return () => {
+        // startTime只有当前函数能访问到 闭包
+        const nowTime = Date.now()
+        if (nowTime - startTime > delay) {
+          startTime = nowTime
+          fn()
+        }
+      }
     }
   },
   created () {
     this.getTotalNuns()
     this.getHomeInfo()
     this.getRecommendInfo()
+  },
+  mounted () {
+    this.$nextTick(() => {
+      this.scrollContainerHeight = this.$refs['scroll-container'].clientHeight
+      // 防抖debounce已经调用执行 返回了一个匿名箭头函数
+      this.$refs['scroll-container'].addEventListener('scroll', this.debounce(this.initScroll, 300))
+      //  节流throttle已经调用执行 返回了一个匿名箭头函数
+      // this.$refs['scroll-container'].addEventListener('scroll', this.throttle(this.initScroll, 5000))
+    })
   }
 }
 </script>
@@ -156,7 +221,6 @@ export default {
     text-align: center;
   }
 }
-.swiper {margin-top: 0.88rem;}
 .kingkong {
   display: flex;
   justify-content: space-around;
@@ -174,10 +238,22 @@ export default {
     }
   }
 }
+// better-scroll大致原理
+.scroll{
+  &-container {
+    position: absolute;
+    top: 0.88rem;
+    left: 0;
+    right: 0;
+    bottom: 0.97rem;
+    // 显示垂直方向的滚动条
+    overflow-y: scroll;
+    // overflow: hidden;
+  }
+}
 
 .recommend{
   background: $colorA;
-  margin-bottom: 0.97rem;
   &-title{
     text-align: center;
     padding: .2rem 0;

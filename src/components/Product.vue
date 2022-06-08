@@ -24,7 +24,7 @@ export default {
   width: 3.2rem;
   font-size: $fontA;
   padding-bottom: .4rem;
-  .pic {background: $colorE;}
+  .pic {background-color: $colorE; }
   .name {font-size: $fontB; padding: .1rem 0;}
   .desc {
     height: .7rem;
