@@ -55,6 +55,14 @@
       </div>
     </div>
 
+    <!-- 回到顶部 -->
+    <div
+      class="to-top"
+      v-show="visibleBackToTop"
+      @click="backToTop"
+    >
+    </div>
+
     <nav-footer></nav-footer>
   </div>
 </template>
@@ -81,11 +89,16 @@ export default {
       ],
       info: {}, // 首页信息
       rcmdItemList: [], // 推荐商品列表
-      scrollContainerHeight: null, // dom高度
+      // dom高度
+      scrollContainerHeight: null,
       scrollInnerHeight: null,
       // 是否还有分页数据
       recommendHasMore: true,
-      isloading: false
+      // 是否显示loading
+      isloading: false,
+      // 是否显示BackToTop图标
+      visibleBackToTop: false
+
     }
   },
   methods: {
@@ -124,6 +137,13 @@ export default {
     // 触底加载
     initScroll () {
       const scrollTop = this.$refs['scroll-container'].scrollTop
+      // console.log(scrollTop, this.scrollContainerHeight)
+      // 显示backToTop按钮
+      if (scrollTop > this.scrollContainerHeight / 2) {
+        this.visibleBackToTop = true
+      } else {
+        this.visibleBackToTop = false
+      }
       // 元素内容高度的度量，包括由于溢出导致的视图中不可见内容
       this.scrollInnerHeight = this.$refs['scroll-inner'].scrollHeight
       // console.log(scrollTop + this.scrollContainerHeight, this.scrollInnerHeight)
@@ -163,6 +183,16 @@ export default {
           fn()
         }
       }
+    },
+    // 回到顶部
+    backToTop () {
+      // 17ms是1000ms除以60hz = 16.66667
+      const timer = setInterval(() => {
+        this.$refs['scroll-container'].scrollTop = this.$refs['scroll-container'].scrollTop - 100
+        if (this.$refs['scroll-container'].scrollTop === 0) {
+          clearInterval(timer)
+        }
+      }, 17)
     }
   },
   created () {
@@ -178,6 +208,9 @@ export default {
       //  节流throttle已经调用执行 返回了一个匿名箭头函数
       // this.$refs['scroll-container'].addEventListener('scroll', this.throttle(this.initScroll, 5000))
     })
+  },
+  destroyed () {
+    this.$refs['scroll-container'].removeEventListener('scroll', this.debounce(this.initScroll, 300))
   }
 }
 </script>
@@ -275,5 +308,17 @@ export default {
     justify-content: space-between;
     padding: 0 .2rem;
   }
+}
+
+// 返回顶部
+.to-top{
+  width: 0.8rem;
+  height: 0.8rem;
+  background-image: url('../assets/img/to-top.png');
+  background-size: 0.8rem 0.8rem;
+  position: fixed;
+  right: 0.2rem;
+  bottom: 1.4rem;
+  z-index: 99;
 }
 </style>
