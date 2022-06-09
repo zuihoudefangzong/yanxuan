@@ -51,6 +51,7 @@
             </product>
           </div>
         </div>
+        <loading v-show="isloading"></loading>
       </div>
     </div>
 
@@ -63,9 +64,10 @@ import NavFooter from '../components/NavFooter.vue'
 import Swiper from '../components/Swiper.vue'
 import { API_HOME, API_HOME_TOTAL_NUM, API_HOME_RCMD } from './api.config'
 import Product from '../components/Product.vue'
+import Loading from '../components/Loading.vue'
 export default {
   name: 'Home',
-  components: { NavFooter, Swiper, Product },
+  components: { NavFooter, Swiper, Product, Loading },
   data () {
     return {
       total: 0, // 当前商品总数
@@ -81,7 +83,9 @@ export default {
       rcmdItemList: [], // 推荐商品列表
       scrollContainerHeight: null, // dom高度
       scrollInnerHeight: null,
-      recommendHasMore: true
+      // 是否还有分页数据
+      recommendHasMore: true,
+      isloading: false
     }
   },
   methods: {
@@ -98,16 +102,23 @@ export default {
       this.bannerList = res.focus.map(item => item.img)
     },
     async getRecommendInfo (lastItem = 0, size = 20) {
-      const { rcmdItemList, hasMore } = await this.$axios.post(
-        API_HOME_RCMD,
-        {
-          lastItem,
-          size
-        }
-      )
-      this.recommendHasMore = hasMore
-      // 合并数组
-      this.rcmdItemList = this.rcmdItemList.concat(rcmdItemList)
+      this.isloading = true
+      try {
+        const { rcmdItemList, hasMore } = await this.$axios.post(
+          API_HOME_RCMD,
+          {
+            lastItem,
+            size
+          }
+        )
+        this.recommendHasMore = hasMore
+        // 合并数组
+        this.rcmdItemList = this.rcmdItemList.concat(rcmdItemList)
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.isloading = false
+      }
     },
 
     // 触底加载
@@ -115,7 +126,7 @@ export default {
       const scrollTop = this.$refs['scroll-container'].scrollTop
       // 元素内容高度的度量，包括由于溢出导致的视图中不可见内容
       this.scrollInnerHeight = this.$refs['scroll-inner'].scrollHeight
-      console.log(scrollTop + this.scrollContainerHeight, this.scrollInnerHeight)
+      // console.log(scrollTop + this.scrollContainerHeight, this.scrollInnerHeight)
       // 滚动了多少 +scrollContainerHeight 避免clientHeight四舍五入
       if (scrollTop + this.scrollContainerHeight + 1 >= this.scrollInnerHeight) {
         // console.log('触底了')
