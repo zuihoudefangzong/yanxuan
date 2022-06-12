@@ -15,7 +15,12 @@
     <section class="suggest"></section>
 
     <!-- 历史记录search-history区域section -->
-    <section class="search-history"></section>
+    <section class="search-history">
+      <div class="history-title">
+        <span>历史记录</span>
+        <i class="iconfont icon-shanchu1"></i>
+      </div>
+    </section>
 
     <!-- search-result结果 -->
     <section class="result"></section>
@@ -33,6 +38,7 @@ export default {
   background: $colorA;
   padding: 0 .2rem;
 }
+// search header
 .header {
   position: fixed;
   top: 0;
@@ -62,5 +68,9 @@ export default {
     }
   }
 
+}
+
+.search-history {
+  margin-top: 0.8rem;
 }
 </style>
