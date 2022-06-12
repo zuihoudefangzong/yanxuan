@@ -6,7 +6,7 @@ import Message from '../components/message'
 // new一个axios的实例(
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // 设置axios请求的基础的基础地址
-  timeout: 5000 // 定义5秒超时
+  timeout: 15000 // 定义5秒超时
 })
 
 // axios响应response拦截器
