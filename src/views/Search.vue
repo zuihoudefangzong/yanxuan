@@ -33,8 +33,16 @@
     <section class="search-history" v-show="!isShowSuggest && !isShowResult">
       <div class="history-title">
         <span>历史记录</span>
-        <i class="iconfont icon-shanchu1"></i>
+        <i class="iconfont icon-shanchu1" @click="deleteHistory"></i>
       </div>
+      <ul class="history">
+        <li
+          class="history-item"
+          v-for="(item,index) in searchHistory"
+          :key="index"
+          @click="select(item)"
+        >{{item}}</li>
+      </ul>
     </section>
 
     <!-- search-result结果 -->
@@ -65,7 +73,8 @@ export default {
       timer: null, // search联想防抖timer
       suggestList: [], // search联想list
       resultList: [], // search结果result
-      visibleLoding: false
+      visibleLoding: false,
+      searchHistory: []
     }
   },
   components: { Product, Loading },
@@ -101,6 +110,7 @@ export default {
       } catch (error) {
         console.log(error)
       } finally {
+        this.saveHistory(productName)
         this.suggestList = [] // 置空就不显示联想结果
         this.visibleLoding = false
       }
@@ -120,11 +130,44 @@ export default {
     },
     cancel () {
       this.$router.push('/')
+    },
+    // read localStorage
+    loadHistory () {
+      this.searchHistory =
+        JSON.parse(localStorage.getItem('searchHistory')) || []
+    },
+    // save到localStorage
+    saveHistory (productName) {
+      const maxLength = 10 // 假如最多存10个
+      this.loadHistory() // 先读取一次localStorage
+      const { searchHistory } = this
+      const index = searchHistory.indexOf(productName)
+      // search过 在数组里面
+      if (index > -1) {
+        searchHistory.splice(index, 1)
+      }
+      // 队列应用
+      const length = searchHistory.length
+      if (length > maxLength) {
+        // 超过maxLength 先将末尾的元素先删除
+        searchHistory.pop()
+      }
+      // 再放到数组第1个
+      searchHistory.unshift(productName)
+      //  转换为JSON字符串 序列化
+      localStorage.setItem('searchHistory', JSON.stringify(searchHistory))
+    },
+    deleteHistory () {
+      localStorage.removeItem('searchHistory')
+      this.searchHistory = []
     }
   },
   computed: {
     isShowSuggest () { return this.suggestList.length },
     isShowResult () { return this.resultList.length }
+  },
+  mounted () {
+    this.loadHistory()
   }
 }
 </script>
@@ -180,6 +223,17 @@ export default {
     .iconfont {
       color: $colorC;
       margin-left: .3rem;
+    }
+  }
+  .history{
+    overflow: hidden;
+    &-item{
+      border: 1px solid $colorD;
+      border-radius: 0.08rem;
+      float: left;
+      padding: 0 0.15rem;
+      margin: 0.12rem;
+      color: $colorC;
     }
   }
 }

@@ -209,7 +209,9 @@ export default {
       // this.$refs['scroll-container'].addEventListener('scroll', this.throttle(this.initScroll, 5000))
     })
   },
-  destroyed () {
+
+  beforeDestroy () {
+    // console.log(this.$refs)
     this.$refs['scroll-container'].removeEventListener('scroll', this.debounce(this.initScroll, 300))
   }
 }
