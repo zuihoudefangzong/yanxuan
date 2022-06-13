@@ -11,7 +11,7 @@ const routes = [
     component: Home
   },
   {
-    path: '/category',
+    path: '/categocry',
     name: 'Categroy',
     component: () => import('../views/Category.vue')
   },
@@ -29,6 +29,11 @@ const routes = [
     path: '/search',
     name: 'Search',
     component: () => import('../views/Search.vue')
+  },
+  {
+    path: '/detail/:id',
+    name: 'Detail',
+    component: () => import('../views/Detail.vue')
   }
 ]
 

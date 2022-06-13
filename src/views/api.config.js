@@ -6,3 +6,6 @@ export const API_HOME_RCMD = '/getRcmd'
 // search
 export const API_SEARCH_COMPLETE = '/searchAutoComplete'
 export const API_SEARCH = '/searchByKeyword'
+
+// product
+export const API_PRODUCT_DETAIL = '/getDetail'

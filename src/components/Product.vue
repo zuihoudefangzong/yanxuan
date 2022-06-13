@@ -1,5 +1,5 @@
 <template>
-  <div class="item" v-if="item">
+  <div class="item" v-if="item" @click="goDetail(item.id)">
     <img class="pic" :src="item.listPicUrl">
     <p class="desc">{{item.simpleDesc}}</p>
     <p class="name">{{item.name}}</p>
@@ -14,6 +14,11 @@ export default {
     item: {
       type: Object,
       default () { return {} }
+    }
+  },
+  methods: {
+    goDetail (id) {
+      this.$router.push('/detail/' + id)
     }
   }
 }
