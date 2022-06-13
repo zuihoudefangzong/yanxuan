@@ -35,6 +35,7 @@ export default {
   padding: 0 0.3rem;
   height: 1rem;
   box-sizing: border-box;
+  background-color: $colorA;
   .logo {width: 2rem;  padding: .2rem 0;}
   .iconfont {
     font-size: 0.56rem;
