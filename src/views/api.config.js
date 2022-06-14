@@ -9,3 +9,8 @@ export const API_SEARCH = '/searchByKeyword'
 
 // product
 export const API_PRODUCT_DETAIL = '/getDetail'
+
+// 分类
+export const API_CATE = '/getCategory'
+export const API_CATE_SUB = '/getSubCategory'
+export const API_CATE_DETAIL = '/getList2Item'
