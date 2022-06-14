@@ -25,6 +25,7 @@
               class="sub-item-detail"
               v-for="item in sub.categoryList"
               :key="item.id"
+              @click="getSubList(item.id)"
             >
               <img :src="item.bannerUrl" class="banner">
               <div class="name">{{item.name}}</div>
@@ -34,30 +35,38 @@
       </ul>
     </div>
     <nav-footer></nav-footer>
+    <div class="loading-wrapper" v-show="visibleLoding"  >
+      <loading></loading>
+    </div>
   </div>
 </template>
 
 <script>
 import NavFooter from '../components/NavFooter.vue'
 import { API_CATE, API_CATE_SUB } from './api.config.js'
+import Loading from '../components/Loading.vue'
 export default {
   name: 'Category',
-  components: { NavFooter },
+  components: { NavFooter, Loading },
   data () {
     return {
       categoryList: [], // 第一级分类list
       actived: 0, // 当前选中的分类
-      categoryGroupList: []// 第二级分类list
+      categoryGroupList: [], // 第二级分类list
+      visibleLoding: false
     }
   },
   methods: {
     async getCategory () {
+      this.visibleLoding = true
       const { categoryList } = await this.$axios.get(API_CATE)
-      console.log(categoryList)
       this.categoryList = categoryList || []
+      this.actived = categoryList[0].id
+      this.visibleLoding = false
     },
 
     async getSubCategory (categoryId) {
+      this.visibleLoding = true
       const {
         category: { categoryGroupList }
       } = await this.$axios.post(
@@ -67,9 +76,13 @@ export default {
         }
       )
       this.categoryGroupList = categoryGroupList
+      this.visibleLoding = false
     },
     select (id) {
       this.actived = id
+    },
+    getSubList (subId) {
+      this.$router.push(`/cateDetail/${this.actived}/${subId}`)
     }
   },
   created () {
@@ -146,5 +159,18 @@ export default {
       }
     }
   }
+}
+
+.loading-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background-color: rgba(153, 153, 153, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
