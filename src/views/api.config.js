@@ -14,3 +14,6 @@ export const API_PRODUCT_DETAIL = '/getDetail'
 export const API_CATE = '/getCategory'
 export const API_CATE_SUB = '/getSubCategory'
 export const API_CATE_DETAIL = '/getList2Item'
+
+// 用户
+export const API_USER_CODE = '/getCode'
