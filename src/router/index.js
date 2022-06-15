@@ -23,7 +23,19 @@ const routes = [
   {
     path: '/profile',
     name: 'Profile',
-    component: () => import('../views/Profile.vue')
+    component: () => import('../views/Profile.vue'),
+    children: [
+      {
+        path: 'login',
+        name: 'Login',
+        component: () => import('../views/Login.vue')
+      },
+      {
+        path: 'regist',
+        name: 'Regist',
+        component: () => import('../views/Regist.vue')
+      }
+    ]
   },
   {
     path: '/search',
