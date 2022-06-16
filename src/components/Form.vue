@@ -27,37 +27,52 @@
       </div>
     </div>
 
-    <div class="form-item">
-      <input type="text"
-        placeholder="邮箱账号"
-        v-model.trim="email"
-      >
-      <div
-        class="clear"
-        @click="clearEmail"
-        v-show="isClearEmail"
-      >
-        <i class="iconfont icon-shanchu"></i>
+    <div v-show="formType === 'regist'">
+      <!-- 获取 -->
+      <div class="form-item">
+        <input type="text"
+          placeholder="邮箱账号"
+          v-model.trim="email"
+        >
+        <div
+          class="clear"
+          @click="clearEmail"
+          v-show="isClearEmail"
+        >
+          <i class="iconfont icon-shanchu"></i>
+        </div>
+      </div>
+
+      <!-- 输入验证码 -->
+      <div class="form-item">
+        <input type="text"
+          placeholder="请输入邮箱验证码"
+          v-model.trim="code"
+        >
+        <div class="status-msg" @click="goCode" v-show="!isShowStatusMsg">获取验证码</div>
+        <div class="status-msg" v-show="isShowStatusMsg"  @click="goCode">{{statusMsg}}</div>
       </div>
     </div>
 
-    <!-- 输入验证码 -->
-    <div class="form-item">
-      <input type="text"
-        placeholder="请输入邮箱验证码"
-        v-model.trim="code"
-      >
-      <div class="status-msg" @click="goCode" v-show="!isShowStatusMsg">获取验证码</div>
-      <div class="status-msg" v-show="isShowStatusMsg"  @click="goCode">{{statusMsg}}</div>
-    </div>
-
-    <div class="back">回到登录</div>
-    <div class="btn">注册</div>
+    <!-- back login or regist -->
+    <div
+      class="back"
+      v-if="title && title.go"
+      @click="$router.push(title.url)"
+    >{{title.go}}</div>
+    <!-- regist button or login button -->
+    <div
+      class="btn"
+      v-if="title && title.btn"
+      @click="onClick"
+    >{{title.btn}}</div>
   </form>
 </template>
 
 <script>
 import { API_USER_CODE } from '@/views/api.config.js'
+// password MD5加密
+import CryptoJS from 'crypto-js'
 export default {
   data () {
     return {
@@ -65,8 +80,16 @@ export default {
       password: '',
       email: '',
       code: '',
-      timer: null,
+      // 倒计时的timer
+      // timer: null,
+      // 倒计时
       statusMsg: ''
+    }
+  },
+  props: {
+    formType: {
+      type: String,
+      default: 'login'
     }
   },
   methods: {
@@ -79,6 +102,8 @@ export default {
     clearEmail () {
       this.email = ''
     },
+
+    // 获取验证码
     async goCode () {
       if (!this.email) {
         alert('请填写邮箱地址')
@@ -94,12 +119,14 @@ export default {
         email: this.email
       })
       if (code === 1) {
-        let count = 10
+        alert(msg)
+        let count = 60
         this.statusMsg = `${--count}秒后重发`
         const run = () => {
-          this.timer = setTimeout(() => {
-            if (count <= 0 && this.timer) {
-              clearTimeout(this.timer)
+          // this.timer =
+          setTimeout(() => {
+            if (count <= 0) {
+              // clearTimeout(this.timer)
               this.statusMsg = ''
               return
             }
@@ -108,8 +135,32 @@ export default {
           }, 1000)
         }
         run()
+      } else if (code === 0) {
+        alert(msg)
       }
-      alert(msg)
+    },
+    // 简单校验
+    verifyForm () {
+      let msg = ''
+      if (this.username.trim() === '') {
+        msg = '请输入用户名'
+      } else if (this.password.trim() === '') {
+        msg = '请输入密码'
+      } else if (this.formType === 'regist' && this.email.trim() === '') {
+        msg = '请输入邮箱'
+      } else if (this.formType === 'regist' && this.code.trim() === '') {
+        msg = '请输入验证码'
+      }
+      if (msg !== '') {
+        alert(msg)
+        return false
+      }
+      return true
+    },
+    onClick () {
+      this.$data.password = CryptoJS.MD5(this.$data.password).toString()
+      // password MD5
+      this.verifyForm() && this.$emit('onClick', this.$data)
     }
   },
   computed: {
@@ -124,6 +175,23 @@ export default {
     },
     isShowStatusMsg () {
       return this.statusMsg.length
+    },
+    // computed title
+    title () {
+      // 可以区分开title btn的content url地址
+      let data = {}
+      if (this.formType === 'regist') {
+        data = {
+          go: '回到登录',
+          btn: '注册',
+          url: '/profile/login'
+        }
+      } else if (this.formType === 'login') {
+        data = {
+
+        }
+      }
+      return data
     }
   }
 }

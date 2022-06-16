@@ -17,3 +17,4 @@ export const API_CATE_DETAIL = '/getList2Item'
 
 // 用户
 export const API_USER_CODE = '/getCode'
+export const API_USER_REGIST = '/regist'
