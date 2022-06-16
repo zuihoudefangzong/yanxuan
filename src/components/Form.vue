@@ -158,8 +158,11 @@ export default {
       return true
     },
     onClick () {
-      this.$data.password = CryptoJS.MD5(this.$data.password).toString()
-      // password MD5
+      if (this.$data.password) {
+        // password MD5
+        this.$data.password = CryptoJS.MD5(this.$data.password).toString()
+      }
+      // 校验器
       this.verifyForm() && this.$emit('onClick', this.$data)
     }
   },
@@ -188,7 +191,9 @@ export default {
         }
       } else if (this.formType === 'login') {
         data = {
-
+          go: '注册账号',
+          btn: '登录',
+          url: '/profile/regist'
         }
       }
       return data
