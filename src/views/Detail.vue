@@ -31,7 +31,10 @@
       </div>
 
       <footer class="footer">
-        <button class="btn-cart">加入购物车</button>
+        <button
+          class="btn-cart"
+          @click="addCart"
+        >加入购物车</button>
       </footer>
 
       <div class="loading-wrapper" v-show="visibleLoding"  >
@@ -41,10 +44,16 @@
 </template>
 
 <script>
-import { API_PRODUCT_DETAIL } from './api.config'
+import {
+  API_PRODUCT_DETAIL,
+  API_USER_VERIFY,
+  API_CART_ADD
+}
+from './api.config'
 import HeaderComp from '../components/Header.vue'
 import Swiper from '../components/Swiper.vue'
 import Loading from '../components/Loading.vue'
+import { mapMutations } from 'vuex'
 export default {
   name: 'Detail',
   components: { HeaderComp, Swiper, Loading },
@@ -80,6 +89,29 @@ export default {
         console.log(error)
       } finally {
         this.visibleLoding = false
+      }
+    },
+    ...mapMutations(['setCartNum']),
+    async addCart () {
+      const user = await this.$axios.get(API_USER_VERIFY)
+      if (!user) {
+        this.$toast({
+          msg: '请先登录',
+          btnShow: true,
+          callback: () => {
+            this.$router.push('/profile/login')
+          }
+        })
+      } else {
+        await this.$axios.post(API_CART_ADD, {
+          id: this.detail.id,
+          name: this.detail.name,
+          price: this.detail.activityPrice || this.detail.retailPrice,
+          pic: this.detail.itemDetail.picUrl1
+        })
+        // console.log(res)
+        this.setCartNum(1)
+        this.$toast('加入成功')
       }
     }
   }

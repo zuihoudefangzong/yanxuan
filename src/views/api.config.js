@@ -20,3 +20,8 @@ export const API_USER_CODE = '/getCode'
 export const API_USER_REGIST = '/regist'
 export const API_USER_LOGIN = '/login'
 export const API_USER_LOGOUT = '/logout'
+// verify验证用户user
+export const API_USER_VERIFY = '/verifyUser'
+
+// 购物车
+export const API_CART_ADD = '/addCart'
