@@ -1,5 +1,5 @@
 <template>
-  <transition @afterleave="handleAfterLeave">
+  <transition @after-leave="handleAfterLeave">
     <!-- 遮罩层 -->
     <div class="container" v-show="visible">
       <div class="toast">
@@ -17,6 +17,7 @@
 export default {
   data () {
     return {
+      msg: '',
       // 是否显示toast
       visible: false,
       // 是否显示按钮group
@@ -40,6 +41,7 @@ export default {
       this.visible = false
     },
     confirm () {
+      this.cancel()
       // 正在关闭
       if (this.callback && this.callback === 'function') {
         this.callback(this)

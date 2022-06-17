@@ -19,13 +19,14 @@ export default {
       )
       // session:服务端 VS cookie:客户端
       if (code === 1) {
-        console.log(user)
+        this.$toast({ msg })
         // 保存用户信息到vuex
         this.$store.commit('setUserinfo', user)
         // 返回上一页
-        this.$router.go(-1)
+        // this.$router.go(-1)
+      } else {
+        this.$toast(msg)
       }
-      console.log(msg)
     }
   }
 }

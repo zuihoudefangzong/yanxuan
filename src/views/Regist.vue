@@ -21,7 +21,7 @@ export default {
           info
         }
       )
-      alert(msg)
+      this.$toast(msg)
       if (code === 1) { // 注册成功
         this.$router.push('/profile/login')
       }

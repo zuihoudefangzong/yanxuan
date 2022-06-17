@@ -13,9 +13,13 @@ import './assets/iconfont/iconfont.css'
 // axios封装后
 // import service from './utils/request.js'
 import axios from './utils/request'
+// message toast
+import Toast from './components/toast/'
 
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios
+// Vue.prototype.$toast = Toast //同等于下面Vue.use
+Vue.use(Toast)
 
 new Vue({
   router,

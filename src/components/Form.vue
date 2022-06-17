@@ -106,12 +106,12 @@ export default {
     // 获取验证码
     async goCode () {
       if (!this.email) {
-        alert('请填写邮箱地址')
+        this.$toast('请填写邮箱地址')
         return
       }
       const reg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/
       if (!reg.test(this.email)) {
-        alert('请填写正确的邮箱格式')
+        this.$toast('请填写正确的邮箱格式')
         return
       }
       // 开始请求
@@ -119,7 +119,7 @@ export default {
         email: this.email
       })
       if (code === 1) {
-        alert(msg)
+        this.$toast(msg)
         let count = 60
         this.statusMsg = `${--count}秒后重发`
         const run = () => {
@@ -136,7 +136,7 @@ export default {
         }
         run()
       } else if (code === 0) {
-        alert(msg)
+        this.$toast(msg)
       }
     },
     // 简单校验
@@ -152,7 +152,7 @@ export default {
         msg = '请输入验证码'
       }
       if (msg !== '') {
-        alert(msg)
+        this.$toast(msg)
         return false
       }
       return true
