@@ -12,7 +12,7 @@
       <i class="iconfont icon-gouwuchekong"></i>
       <div>购物车</div>
     </router-link>
-    <router-link to="/profile" class="nav-item">
+    <router-link to="/profile/login" class="nav-item">
       <i class="iconfont icon-gerenyonghutouxiang"></i>
       <div>个人</div>
     </router-link>

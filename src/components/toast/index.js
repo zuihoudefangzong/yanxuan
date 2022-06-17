@@ -24,7 +24,6 @@ let currentToast
 
 const toast = () => {
   Vue.prototype.$toast = (options) => {
-    console.log('调用了')
     options = options || {}
     // 假如已经有toast了 调用里面方法 销毁组件
     if (currentToast) {
@@ -39,11 +38,10 @@ const toast = () => {
       currentToast.visible = true
     } else {
       currentToast.msg = options.msg
-      currentToast.btnshow = options.btnshow
+      currentToast.btnShow = options.btnShow
       currentToast.visible = true
       currentToast.callback = options.callback
     }
-    console.log(currentToast)
     return currentToast
   }
 }

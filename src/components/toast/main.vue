@@ -41,11 +41,10 @@ export default {
       this.visible = false
     },
     confirm () {
-      this.cancel()
-      // 正在关闭
-      if (this.callback && this.callback === 'function') {
+      if (this.callback && typeof this.callback === 'function') {
         this.callback(this)
       }
+      this.cancel()
     },
     // transition离开时候钩子函数afterleave的回调
     handleAfterLeave () {
