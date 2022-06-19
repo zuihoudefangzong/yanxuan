@@ -6,7 +6,15 @@
         <i class="iconfont icon-icon-test"></i>
         <span class="placeholoder">搜索商品，共{{total}}款好物</span>
       </div>
-      <div class="login">登录</div>
+      <div v-if="userinfo" class="cart" @click="goCart">
+        <i class="iconfont icon-gouwuchekong"></i>
+        <span class="cart-num" v-if="cartNum > 0">{{cartNum}}</span>
+      </div>
+      <div
+        v-else
+        class="login"
+        @click="login"
+      >登录</div>
     </header>
 
     <!-- home开始 -->
@@ -70,9 +78,10 @@
 <script>
 import NavFooter from '../components/NavFooter.vue'
 import Swiper from '../components/Swiper.vue'
-import { API_HOME, API_HOME_TOTAL_NUM, API_HOME_RCMD } from './api.config'
+import { API_HOME, API_HOME_TOTAL_NUM, API_HOME_RCMD, API_CART_NUM } from './api.config'
 import Product from '../components/Product.vue'
 import Loading from '../components/Loading.vue'
+import { mapState, mapMutations } from 'vuex'
 export default {
   name: 'Home',
   components: { NavFooter, Swiper, Product, Loading },
@@ -193,6 +202,20 @@ export default {
           clearInterval(timer)
         }
       }, 17)
+    },
+    ...mapMutations(['initCartNum', 'setUserinfo']),
+    async getCartNum () {
+      const res = await this.$axios.get(API_CART_NUM)
+      if (res) {
+        this.initCartNum(res.num)
+        this.setUserinfo(res.user)
+      }
+    },
+    login () {
+      this.$router.push('/profile/login')
+    },
+    goCart () {
+      this.$router.push('/cart')
     }
   },
   created () {
@@ -213,6 +236,9 @@ export default {
   beforeDestroy () {
     // console.log(this.$refs)
     this.$refs['scroll-container'].removeEventListener('scroll', this.debounce(this.initScroll, 300))
+  },
+  computed: {
+    ...mapState(['cartNum', 'userinfo'])
   }
 }
 </script>
@@ -322,5 +348,26 @@ export default {
   right: 0.2rem;
   bottom: 1.4rem;
   z-index: 99;
+}
+
+// cart css
+.cart{
+  position: relative;
+  .iconfont{
+    font-size: 0.56rem;
+  }
+  &-num{
+    width: 0.36rem;
+    height: 0.36rem;
+    background-color: $colorB;
+    text-align: center;
+    line-height: 0.36rem;
+    border-radius: 50%;
+    color: $colorA;
+    position: absolute;
+    top: 0.1rem;
+    right: -0.1rem;
+    font-size: $fontB;
+  }
 }
 </style>

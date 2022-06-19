@@ -13,12 +13,32 @@
 </template>
 
 <script>
+// cookie该接口能获取购物车数量和userinfo
+import { API_CART_NUM } from '../views/api.config'
+import { mapState, mapMutations } from 'vuex'
 export default {
   name: 'NavHeader',
-  data () {
-    return {
-      cartNum: 10
+  computed: {
+    // cartNum () {
+    //   return this.$store.state.cartNum
+    // },
+    ...mapState(['cartNum'])
+  },
+  methods: {
+    ...mapMutations(['initCartNum', 'setUserinfo']),
+    async getCartNum () {
+      const res = await this.$axios.get(API_CART_NUM)
+      if (res) {
+        this.setUserinfo(res.user)
+        this.initCartNum(res.num)
+      } else {
+        this.initCartNum(0)
+        this.setUserinfo(null)
+      }
     }
+  },
+  created () {
+    this.getCartNum()
   }
 }
 </script>

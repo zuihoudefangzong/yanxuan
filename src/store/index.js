@@ -14,6 +14,9 @@ export default new Vuex.Store({
     },
     setCartNum (state, num) {
       state.cartNum += num
+    },
+    initCartNum (state, num) {
+      state.cartNum = num
     }
   },
   actions: {

@@ -25,3 +25,4 @@ export const API_USER_VERIFY = '/verifyUser'
 
 // 购物车
 export const API_CART_ADD = '/addCart'
+export const API_CART_NUM = '/getCartNum'
