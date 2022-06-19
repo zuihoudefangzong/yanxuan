@@ -15,7 +15,10 @@
         :key="item.productId"
         class="item"
       >
-        <input type="checkbox">
+        <input
+          type="checkbox"
+          v-model="item.checked"
+          @change="toggleCheckOne(item)">
         <img class="pic" :src="item.pic">
         <div class="detail">
           <div class="name">{{item.name}}</div>
@@ -35,26 +38,56 @@
       </div>
     </div>
 
+    <!-- 全选按钮 -->
+    <div class="footer">
+      <div class="checkall">
+        <input
+          type="checkbox"
+          class="check-all">
+          <span class="checked">已选({{checkNum}})</span>
+      </div>
+      <div class="total">合计: ￥{{total}}</div>
+      <div class="confirm">下单</div>
+    </div>
+
     <nav-footer></nav-footer>
+
+    <div class="loading-wrapper" v-show="visibleLoding"  >
+      <loading></loading>
+    </div>
   </div>
 </template>
 
 <script>
 import {
-  API_USER_VERIFY, API_CART_DETAIL
+  API_USER_VERIFY,
+  API_CART_DETAIL,
+  API_CART_UPDATE
 } from './api.config'
 import NavFooter from '../components/NavFooter.vue'
+import Loading from '../components/Loading'
 export default {
   name: 'Cart',
-  components: { NavFooter },
+  components: { NavFooter, Loading },
   data () {
     return {
-      cartDetail: []
+      cartDetail: [],
+      visibleLoding: false,
+      // checkNum: 0, // 已选商品数量
+      total: 5 // 合计总价
     }
   },
   computed: {
     cartLength () {
       return this.cartDetail.length
+    },
+    checkNum () {
+      return this.cartDetail.reduce((sum, product) => {
+        if (product.checked) {
+          sum += product.num
+        }
+        return sum
+      }, 0)
     }
   },
   methods: {
@@ -80,11 +113,18 @@ export default {
     },
     async _getCartDetail () {
       try {
+        this.visibleLoding = true
         const res = await this.$axios.get(API_CART_DETAIL)
         this.cartDetail = res
       } finally {
-
+        this.visibleLoding = false
       }
+    },
+    async updateCart (item) {
+      await this.$axios.post(API_CART_UPDATE, item)
+    },
+    toggleCheckOne (item) {
+      this.updateCart(item)
     }
   },
   created () {
@@ -177,5 +217,50 @@ header {
   .icon-shanchu1 {
     padding: 0.2rem;
   }
+}
+
+.footer {
+  position: fixed;
+  bottom: .97rem;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-content: center;
+  height: 1rem;
+  background-color: $colorA;
+  align-items: center;
+  .check-all {
+    margin: 0 .2rem;
+  }
+  .checked {
+    padding: 0 0.2rem;
+  }
+  .total {
+    flex: 1;
+    margin-right: 0.2rem;
+    text-align: right;
+    color: $colorB;
+  }
+  .confirm {
+    background-color: $colorB;
+    height: 100%;
+    width: 2.4rem;
+    color: $colorA;
+    text-align: center;
+    line-height: 1rem;
+  }
+}
+
+.loading-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background-color: rgba(153, 153, 153, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
