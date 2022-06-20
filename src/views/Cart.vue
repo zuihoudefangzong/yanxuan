@@ -52,7 +52,7 @@
         <span class="checked">已选({{checkNum}})</span>
       </div>
       <div class="total">合计: ￥{{total}}</div>
-      <div class="confirm">下单</div>
+      <div class="confirm" @click="confirm">下单</div>
     </div>
 
     <nav-footer></nav-footer>
@@ -69,7 +69,8 @@ import {
   API_CART_DETAIL,
   API_CART_UPDATE,
   API_CART_CHECK,
-  API_CART_DEL
+  API_CART_DEL,
+  API_ORDER_CREATE
 } from './api.config'
 import NavFooter from '../components/NavFooter.vue'
 import Loading from '../components/Loading'
@@ -133,8 +134,9 @@ export default {
   },
   methods: {
     async userVerify () {
+      let user
       try {
-        const user = await this.$axios.get(API_USER_VERIFY)
+        user = await this.$axios.get(API_USER_VERIFY)
         if (!user) {
           this.$toast(
             {
@@ -148,9 +150,8 @@ export default {
         }
       } catch (error) {
         console.log(error)
-      } finally {
-
-      }
+      } finally {}
+      return user
     },
     async _getCartDetail () {
       try {
@@ -169,6 +170,8 @@ export default {
     toggleCheckOne (item) {
       this.updateCart(item)
     },
+
+    // checkall或者全不选
     toggleCheckAll () {
       this.cartDetail.forEach(product => {
         product.checked = this.checkAllFlagTemp
@@ -178,6 +181,7 @@ export default {
         { checkAllFlag: this.checkAllFlagTemp }
       )
     },
+
     less (item) {
       if (item.num <= 1) {
         this.$toast({
@@ -188,10 +192,12 @@ export default {
       item.num--
       this.updateCart(item)
     },
+
     more (item) {
       item.num++
       this.updateCart(item)
     },
+    // delete product
     delCart (item, index) {
       this.$toast({
         btnShow: true,
@@ -209,11 +215,27 @@ export default {
           }
         }
       })
+    },
+    // confirm
+    async confirm () {
+      if (this.checkNum <= 0) return
+      // 先过滤得到一个新数组
+      const list = this.cartDetail.filter(item => item.checked)
+      // 先后台提交produ参数和total总数量 得到orderNo
+      const { orderNo } = await this.$axios.post(
+        API_ORDER_CREATE,
+        {
+          list,
+          total: this.total
+        }
+      )
+      // 前端路由跳转
+      this.$router.push(`/order/${orderNo}`)
     }
   },
   created () {
-    this.userVerify()
-    this._getCartDetail()
+    const user = this.userVerify()
+    user && this._getCartDetail()
   }
 }
 </script>
@@ -334,7 +356,9 @@ header {
     line-height: 1rem;
   }
 }
-
+.btn-disable {
+  background-color: $colorD;
+}
 .loading-wrapper {
   position: absolute;
   top: 0;

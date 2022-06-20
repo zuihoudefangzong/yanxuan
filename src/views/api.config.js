@@ -30,3 +30,6 @@ export const API_CART_DETAIL = '/getCartDetail'
 export const API_CART_UPDATE = '/updateCart'
 export const API_CART_CHECK = '/checkAllCart'
 export const API_CART_DEL = '/delCart'
+
+// 订单
+export const API_ORDER_CREATE = '/createOrder'

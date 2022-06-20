@@ -51,6 +51,11 @@ const routes = [
     path: '/cateDetail/:cateId/:subId',
     name: 'CategoryDetail',
     component: () => import('../views/CategoryDetail.vue')
+  },
+  {
+    path: '/order/:orderNo',
+    name: 'MyOrder',
+    component: () => import('../views/Order.vue')
   }
 ]
 
