@@ -25,12 +25,14 @@
           <div class="info">
             <div class="price">￥{{item.price}}</div>
             <div class="select-num">
-              <span class="label less">-</span>
+              <span class="label less" @click="less(item)">-</span>
               <input
                 type="text"
                 class="label num"
-                v-model="item.num">
-              <span class="label more">+</span>
+                v-model="item.num"
+                @change="updateCart(item)"
+              >
+              <span class="label more" @click="more(item)">+</span>
             </div>
           </div>
         </div>
@@ -78,8 +80,9 @@ export default {
       cartDetail: [],
       visibleLoding: false,
       // checkNum: 0, // 已选商品数量
-      checkAllFlagTemp: false,
-      total: 5 // 合计总价
+      // checkall表示符flagtemp
+      checkAllFlagTemp: false
+      // total: 5 // 合计总价
     }
   },
   computed: {
@@ -111,6 +114,19 @@ export default {
         // console.log(val)
         this.checkAllFlagTemp = val
       }
+    },
+    // 总价的计算
+    total () {
+      const t = this.cartDetail.reduce(
+        (totalPrice, product) => {
+          if (product.checked) {
+            totalPrice += product.price * product.num
+          }
+          return totalPrice
+        },
+        0
+      )
+      return t.toFixed(1) // 保留小数点一位
     }
 
   },
@@ -160,6 +176,20 @@ export default {
         API_CART_CHECK,
         { checkAllFlag: this.checkAllFlagTemp }
       )
+    },
+    less (item) {
+      if (item.num <= 1) {
+        this.$toast({
+          msg: '数量不能小于1'
+        })
+        return
+      }
+      item.num--
+      this.updateCart(item)
+    },
+    more (item) {
+      item.num++
+      this.updateCart(item)
     }
   },
   created () {
