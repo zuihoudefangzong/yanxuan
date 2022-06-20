@@ -52,7 +52,11 @@
         <span class="checked">已选({{checkNum}})</span>
       </div>
       <div class="total">合计: ￥{{total}}</div>
-      <div class="confirm" @click="confirm">下单</div>
+      <div
+        class="confirm"
+        @click="confirm"
+        :class="{'btn-disable': checkNum === 0}"
+      >下单</div>
     </div>
 
     <nav-footer></nav-footer>
@@ -355,10 +359,11 @@ header {
     text-align: center;
     line-height: 1rem;
   }
+  .btn-disable {
+    background-color: $colorD;
+  }
 }
-.btn-disable {
-  background-color: $colorD;
-}
+
 .loading-wrapper {
   position: absolute;
   top: 0;
