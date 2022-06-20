@@ -36,7 +36,7 @@
             </div>
           </div>
         </div>
-         <i class="iconfont icon-shanchu1"></i>
+         <i class="iconfont icon-shanchu1" @click="delCart(item, index)"></i>
       </div>
     </div>
 
@@ -68,7 +68,8 @@ import {
   API_USER_VERIFY,
   API_CART_DETAIL,
   API_CART_UPDATE,
-  API_CART_CHECK
+  API_CART_CHECK,
+  API_CART_DEL
 } from './api.config'
 import NavFooter from '../components/NavFooter.vue'
 import Loading from '../components/Loading'
@@ -190,6 +191,24 @@ export default {
     more (item) {
       item.num++
       this.updateCart(item)
+    },
+    delCart (item, index) {
+      this.$toast({
+        btnShow: true,
+        msg: '确认删除码',
+        callback: async () => {
+          const { deletedCount } = await this.$axios.post(
+            API_CART_DEL,
+            item
+          )
+          if (deletedCount > 0) {
+            this.cartDetail.splice(index, 1)
+            this.$toast({
+              msg: '删除成功'
+            })
+          }
+        }
+      })
     }
   },
   created () {
