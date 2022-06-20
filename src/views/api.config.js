@@ -34,3 +34,4 @@ export const API_CART_DEL = '/delCart'
 // 订单
 export const API_ORDER_CREATE = '/createOrder'
 export const API_ORDER_DETAIL = '/getOrderDetail'
+export const API_ORDER_GET = '/getOrders'

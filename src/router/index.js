@@ -54,8 +54,13 @@ const routes = [
   },
   {
     path: '/order/:orderNo',
-    name: 'MyOrder',
+    name: 'Order',
     component: () => import('../views/Order.vue')
+  },
+  {
+    path: '/myOrder',
+    name: 'MyOrder',
+    component: () => import('../views/MyOrder.vue')
   }
 ]
 
