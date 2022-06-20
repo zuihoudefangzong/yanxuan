@@ -23,7 +23,7 @@ service.interceptors.response.use(
       return Promise.reject(res.message)
     } else {
       // 其他报错 但是服务器响应
-      Message.warning(res.message)
+      Message.warning(res.msg)
     }
   },
   // 服务器500/404或者超时

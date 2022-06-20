@@ -43,8 +43,11 @@
       <div class="checkall">
         <input
           type="checkbox"
-          class="check-all">
-          <span class="checked">已选({{checkNum}})</span>
+          class="check-all"
+          v-model="checkAllFlag"
+          @change="toggleCheckAll"
+        >
+        <span class="checked">已选({{checkNum}})</span>
       </div>
       <div class="total">合计: ￥{{total}}</div>
       <div class="confirm">下单</div>
@@ -62,7 +65,8 @@
 import {
   API_USER_VERIFY,
   API_CART_DETAIL,
-  API_CART_UPDATE
+  API_CART_UPDATE,
+  API_CART_CHECK
 } from './api.config'
 import NavFooter from '../components/NavFooter.vue'
 import Loading from '../components/Loading'
@@ -74,6 +78,7 @@ export default {
       cartDetail: [],
       visibleLoding: false,
       // checkNum: 0, // 已选商品数量
+      checkAllFlagTemp: false,
       total: 5 // 合计总价
     }
   },
@@ -88,7 +93,26 @@ export default {
         }
         return sum
       }, 0)
+    },
+    // 全选标志flag
+    checkAllFlag: {
+      get () {
+        // 求和reduce
+        const selectNum = this.cartDetail.reduce(
+          (sum, product) => {
+            if (product.checked) { sum++ }
+            return sum
+          },
+          0
+        )
+        return selectNum === this.cartLength
+      },
+      set (val) {
+        // console.log(val)
+        this.checkAllFlagTemp = val
+      }
     }
+
   },
   methods: {
     async userVerify () {
@@ -100,13 +124,13 @@ export default {
               btnShow: true,
               msg: '请登录',
               callback: () => {
-                this.$router.pusg('/profile/login')
+                this.$router.push('/profile/login')
               }
             }
           )
         }
       } catch (error) {
-
+        console.log(error)
       } finally {
 
       }
@@ -115,7 +139,9 @@ export default {
       try {
         this.visibleLoding = true
         const res = await this.$axios.get(API_CART_DETAIL)
-        this.cartDetail = res
+        if (res) {
+          this.cartDetail = res
+        }
       } finally {
         this.visibleLoding = false
       }
@@ -125,6 +151,15 @@ export default {
     },
     toggleCheckOne (item) {
       this.updateCart(item)
+    },
+    toggleCheckAll () {
+      this.cartDetail.forEach(product => {
+        product.checked = this.checkAllFlagTemp
+      })
+      this.$axios.post(
+        API_CART_CHECK,
+        { checkAllFlag: this.checkAllFlagTemp }
+      )
     }
   },
   created () {
