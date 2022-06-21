@@ -215,6 +215,7 @@ export default {
       border: none;
       outline: none;
       height: 100%;
+      background-color: $colorE;
     }
     .clear {
       width: .64rem;
