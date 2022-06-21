@@ -56,6 +56,7 @@ export default {
           this.$toast({
             msg: '支付成功'
           })
+          this.$router.push('/myOrder')
         }
       })
     }
