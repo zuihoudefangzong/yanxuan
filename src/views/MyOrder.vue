@@ -32,12 +32,16 @@
         <div class="total">总价：￥{{order.total}}</div>
       </div>
     </div>
+
+    <nav-footer></nav-footer>
   </div>
 </template>
 
 <script>
 import { API_ORDER_GET } from './api.config.js'
+import NavFooter from '../components/NavFooter.vue'
 export default {
+  components: { NavFooter },
   data () {
     return {
       orderList: []
@@ -84,6 +88,7 @@ export default {
 
 .order-container {
   margin-top: 1rem;
+  margin-bottom: 1rem;
   .order-list {
     background-color: $colorA;
     margin-top: .2rem;
