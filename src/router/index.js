@@ -13,7 +13,10 @@ const routes = [
   {
     path: '/category',
     name: 'Categroy',
-    component: () => import('../views/Category.vue')
+    component: () => import('../views/Category.vue'),
+    meta: {
+      keepAlive: true
+    }
   },
   {
     path: '/cart',
