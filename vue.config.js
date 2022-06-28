@@ -22,5 +22,13 @@ module.exports = {
   // 路由懒加载
   chainWebpack: config => {
     config.plugins.delete('prefetch')
-  }
+  },
+  // 源码source map
+  productionSourceMap: false
+  // 由于用了cdn引入Vue
+  // configureWebpack: {
+  //   externals: {
+  //     vue: 'Vue'
+  //   }
+  // }
 }
